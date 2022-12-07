@@ -21,6 +21,22 @@ class JsonRpcError {
       JsonRpcError(-32700, message);
   factory JsonRpcError.methodNotFound(String message) =>
       JsonRpcError(-32601, message);
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30000, 'Invalid secret token');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30001, 'Session expired');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30002, 'Session already connected');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30003, 'Incorrect “until“ field');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30004, 'Chain id not supported');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30005, 'Silent Sign session is not connected');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30006, 'Invalid DApp name');
+  factory JsonRpcError.methodNotFound() =>
+      JsonRpcError(-30007, 'Silent Sign Session is already connected');
 
   factory JsonRpcError.fromJson(Map<String, dynamic> json) =>
       _$JsonRpcErrorFromJson(json);

@@ -9,7 +9,9 @@ part of 'wc_session_request.dart';
 WCSessionRequest _$WCSessionRequestFromJson(Map<String, dynamic> json) {
   return WCSessionRequest(
     peerId: json['peerId'] as String,
-    peerMeta: WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
+    peerMeta: json['peerMeta'] == null
+        ? null
+        : WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
     chainId: json['chainId'] as int,
   );
 }

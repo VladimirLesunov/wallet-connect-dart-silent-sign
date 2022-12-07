@@ -11,7 +11,7 @@ JsonRpcRequest _$JsonRpcRequestFromJson(Map<String, dynamic> json) {
     id: json['id'] as int,
     jsonrpc: json['jsonrpc'] as String,
     method: _$enumDecodeNullable(_$WCMethodEnumMap, json['method']),
-    params: json['params'] as List<dynamic>,
+    params: json['params'] as List,
   );
 }
 
@@ -23,41 +23,36 @@ Map<String, dynamic> _$JsonRpcRequestToJson(JsonRpcRequest instance) =>
       'params': instance.params,
     };
 
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object source, {
-  K unknownValue,
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
   }
 
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
 }
 
-K _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
   dynamic source, {
-  K unknownValue,
+  T unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$WCMethodEnumMap = {
@@ -68,4 +63,7 @@ const _$WCMethodEnumMap = {
   WCMethod.ETH_SIGN_TYPE_DATA: 'eth_signTypedData',
   WCMethod.ETH_SIGN_TRANSACTION: 'eth_signTransaction',
   WCMethod.ETH_SEND_TRANSACTION: 'eth_sendTransaction',
+  WCMethod.WALLET_DISCONNECT_SILENT_SIGN: 'wallet_disconnectSilentSign',
+  WCMethod.WALLET_REQUEST_SILENT_SIGN: 'wallet_requestSilentSign',
+  WCMethod.WALLET_SILENT_SEND_TRANSACTION: 'wallet_silentSendTransaction',
 };

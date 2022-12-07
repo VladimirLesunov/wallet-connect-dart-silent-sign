@@ -21,21 +21,21 @@ class JsonRpcError {
       JsonRpcError(-32700, message);
   factory JsonRpcError.methodNotFound(String message) =>
       JsonRpcError(-32601, message);
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.invalidSecretToken() =>
       JsonRpcError(-30000, 'Invalid secret token');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.sessionExpired() =>
       JsonRpcError(-30001, 'Session expired');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.sessionAlreadyConnected() =>
       JsonRpcError(-30002, 'Session already connected');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.incorrectUntil() =>
       JsonRpcError(-30003, 'Incorrect “until“ field');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.chainIdNotSupported() =>
       JsonRpcError(-30004, 'Chain id not supported');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.silentSignSessionNotConnected() =>
       JsonRpcError(-30005, 'Silent Sign session is not connected');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.invalidDAppName() =>
       JsonRpcError(-30006, 'Invalid DApp name');
-  factory JsonRpcError.methodNotFound() =>
+  factory JsonRpcError.silentSignAlreadyConnected() =>
       JsonRpcError(-30007, 'Silent Sign Session is already connected');
 
   factory JsonRpcError.fromJson(Map<String, dynamic> json) =>

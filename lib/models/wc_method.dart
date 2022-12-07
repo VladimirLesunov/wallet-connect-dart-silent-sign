@@ -21,4 +21,14 @@ enum WCMethod {
 
   @JsonValue("eth_sendTransaction")
   ETH_SEND_TRANSACTION,
+
+  @JsonValue("wallet_disconnectSilentSign")
+  WALLET_DISCONNECT_SILENT_SIGN,
+
+  @JsonValue("wallet_requestSilentSign")
+  WALLET_REQUEST_SILENT_SIGN,
+
+  @JsonValue("wallet_silentSendTransaction")
+  WALLET_SILENT_SEND_TRANSACTION,
+
 }

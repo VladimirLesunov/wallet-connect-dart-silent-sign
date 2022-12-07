@@ -8,9 +8,10 @@ part 'json_rpc_error_response.g.dart';
 @JsonSerializable()
 class JsonRpcErrorResponse {
   final int id;
-  final String jsonrpc = JSONRPC_VERSION;
+  String jsonrpc = JSONRPC_VERSION;
   final JsonRpcError error;
   JsonRpcErrorResponse({
+    String this.jsonrpc,
     @required this.id,
     @required this.error,
   });

@@ -11,10 +11,11 @@ WCApproveSessionResponse _$WCApproveSessionResponseFromJson(
   return WCApproveSessionResponse(
     approved: json['approved'] as bool,
     chainId: json['chainId'] as int,
-    accounts:
-        (json['accounts'] as List<dynamic>).map((e) => e as String).toList(),
+    accounts: (json['accounts'] as List)?.map((e) => e as String)?.toList(),
     peerId: json['peerId'] as String,
-    peerMeta: WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
+    peerMeta: json['peerMeta'] == null
+        ? null
+        : WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
   );
 }
 

@@ -11,7 +11,7 @@ WCPeerMeta _$WCPeerMetaFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     url: json['url'] as String,
     description: json['description'] as String,
-    icons: (json['icons'] as List<dynamic>).map((e) => e as String).toList(),
+    icons: (json['icons'] as List)?.map((e) => e as String)?.toList(),
   );
 }
 

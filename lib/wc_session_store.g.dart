@@ -8,10 +8,15 @@ part of 'wc_session_store.dart';
 
 WCSessionStore _$WCSessionStoreFromJson(Map<String, dynamic> json) {
   return WCSessionStore(
-    session: WCSession.fromJson(json['session'] as Map<String, dynamic>),
-    peerMeta: WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
-    remotePeerMeta:
-        WCPeerMeta.fromJson(json['remotePeerMeta'] as Map<String, dynamic>),
+    session: json['session'] == null
+        ? null
+        : WCSession.fromJson(json['session'] as Map<String, dynamic>),
+    peerMeta: json['peerMeta'] == null
+        ? null
+        : WCPeerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>),
+    remotePeerMeta: json['remotePeerMeta'] == null
+        ? null
+        : WCPeerMeta.fromJson(json['remotePeerMeta'] as Map<String, dynamic>),
     chainId: json['chainId'] as int,
     peerId: json['peerId'] as String,
     remotePeerId: json['remotePeerId'] as String,

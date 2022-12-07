@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:wallet_connect/models/ethereum/wc_ethereum_sign_message.dart';
 import 'package:wallet_connect/models/ethereum/wc_ethereum_transaction.dart';
+import 'package:wallet_connect/models/ethereum/wc_wallet_disconnectSilentSign.dart';
+import 'package:wallet_connect/models/ethereum/wc_wallet_requestSilentSign.dart';
+import 'package:wallet_connect/models/ethereum/wc_wallet_silentSend.dart';
 import 'package:wallet_connect/models/exception/exceptions.dart';
 import 'package:wallet_connect/models/jsonrpc/json_rpc_error.dart';
 import 'package:wallet_connect/models/jsonrpc/json_rpc_error_response.dart';
@@ -26,9 +29,12 @@ typedef SessionRequest = void Function(int id, WCPeerMeta peerMeta);
 typedef SocketError = void Function(dynamic message);
 typedef SocketClose = void Function(int code, String reason);
 typedef EthSign = void Function(int id, WCEthereumSignMessage message);
-typedef EthTransaction = void Function(
-    int id, WCEthereumTransaction transaction);
+typedef EthTransaction = void Function(int id, WCEthereumTransaction transaction);
 typedef CustomRequest = void Function(int id, String payload);
+
+typedef WalletRequestSilentSignTransaction = void Function(int id, WCWalletRequestSilentSign transaction);
+typedef WalletDisconnectSilentSignTransaction = void Function(int id, WCWalletDisconnectSilentSign transaction);
+typedef WalletSilentSendTransaction = void Function(int id, WCWalletSilentSend transaction);
 
 class WCClient {
   WCClient({
@@ -40,7 +46,14 @@ class WCClient {
     this.onEthSendTransaction,
     this.onCustomRequest,
     this.onConnect,
+    this.onWalletRequestSilentSign,
+    this.onWalletDisconnectSilentSign,
+    this.onWalletSilentSendTransaction,
   });
+
+  final WalletDisconnectSilentSignTransaction onWalletDisconnectSilentSign;
+  final WalletRequestSilentSignTransaction onWalletRequestSilentSign;
+  final WalletSilentSendTransaction onWalletSilentSendTransaction;
 
   final SessionRequest onSessionRequest;
   final SocketError onFailure;
@@ -52,6 +65,7 @@ class WCClient {
 
   WebSocketChannel _webSocket;
   Stream _socketStream = Stream.empty();
+
   // ignore: close_sinks
   WebSocketSink _socketSink;
   WCSession _session;
@@ -64,10 +78,15 @@ class WCClient {
   bool _isConnected = false;
 
   WCSession get session => _session;
+
   WCPeerMeta get peerMeta => _peerMeta;
+
   WCPeerMeta get remotePeerMeta => _remotePeerMeta;
+
   int get chainId => _chainId;
+
   String get peerId => _peerId;
+
   String get remotePeerId => _remotePeerId;
 
   connectNewSession({
@@ -145,14 +164,14 @@ class WCClient {
     return _encryptAndSend(jsonEncode(request.toJson()));
   }
 
-  rejectSession({String message = "Session rejected"}) {
+  rejectSession({String message = "Session rejected", JsonRpcError error}) {
     if (_handshakeId <= 0) {
       throw HandshakeException();
     }
 
     final response = JsonRpcErrorResponse(
       id: _handshakeId,
-      error: JsonRpcError.serverError(message),
+      error: error ?? JsonRpcError.serverError(message),
     );
     _encryptAndSend(jsonEncode(response.toJson()));
   }
@@ -172,11 +191,12 @@ class WCClient {
   rejectRequest({
     @required int id,
     String message = "Reject by the user",
+    JsonRpcError error,
   }) {
     assert(id != null);
     final response = JsonRpcErrorResponse(
       id: id,
-      error: JsonRpcError.serverError(message),
+      error: error ?? JsonRpcError.serverError(message),
     );
     _encryptAndSend(jsonEncode(response.toJson()));
   }
@@ -201,8 +221,7 @@ class WCClient {
     _peerId = peerId;
     _remotePeerId = remotePeerId;
     _chainId = chainId;
-    final bridgeUri =
-        Uri.parse(session.bridge.replaceAll('https://', 'wss://'));
+    final bridgeUri = Uri.parse(session.bridge.replaceAll('https://', 'wss://'));
     _webSocket = WebSocketChannel.connect(bridgeUri);
     _isConnected = true;
     if (fromSessionStore) {
@@ -265,8 +284,7 @@ class WCClient {
       },
       onDone: () {
         if (_isConnected) {
-          print(
-              'onDone $_isConnected CloseCode ${_webSocket.closeCode} ${_webSocket.closeReason}');
+          print('onDone $_isConnected CloseCode ${_webSocket.closeCode} ${_webSocket.closeReason}');
           _resetState();
           onDisconnect?.call(_webSocket.closeCode, _webSocket.closeReason);
         }
@@ -275,8 +293,7 @@ class WCClient {
   }
 
   Future<String> _decrypt(WCSocketMessage socketMessage) async {
-    final payload =
-        WCEncryptionPayload.fromJson(jsonDecode(socketMessage.payload));
+    final payload = WCEncryptionPayload.fromJson(jsonDecode(socketMessage.payload));
     final decrypted = await WCCipher.decrypt(payload, _session.key);
     print("DECRYPTED: $decrypted");
     return decrypted;
@@ -369,6 +386,21 @@ class WCClient {
         print('ETH_SEND_TRANSACTION $request');
         final param = WCEthereumTransaction.fromJson(request.params.first);
         onEthSendTransaction?.call(request.id, param);
+        break;
+      case WCMethod.WALLET_DISCONNECT_SILENT_SIGN:
+        print('WALLET_DISCONNECT_SILENT_SIGN $request');
+        final param = WCWalletDisconnectSilentSign.fromJson(request.params.first);
+        onWalletDisconnectSilentSign?.call(request.id, param);
+        break;
+      case WCMethod.WALLET_REQUEST_SILENT_SIGN:
+        print('WALLET_REQUEST_SILENT_SIGN $request');
+        final param = WCWalletRequestSilentSign.fromJson(request.params.first);
+        onWalletRequestSilentSign?.call(request.id, param);
+        break;
+      case WCMethod.WALLET_SILENT_SEND_TRANSACTION:
+        print('WALLET_SILENT_SEND_TRANSACTION $request');
+        final param = WCWalletSilentSend.fromJson(request.params.first);
+        onWalletSilentSendTransaction?.call(request.id, param);
         break;
       default:
     }

@@ -11,7 +11,7 @@ class JsonRpcErrorResponse {
   String jsonrpc = JSONRPC_VERSION;
   final JsonRpcError error;
   JsonRpcErrorResponse({
-    String this.jsonrpc,
+    String this.jsonrpc = JSONRPC_VERSION,
     @required this.id,
     @required this.error,
   });
@@ -21,5 +21,5 @@ class JsonRpcErrorResponse {
   Map<String, dynamic> toJson() => _$JsonRpcErrorResponseToJson(this);
 
   @override
-  String toString() => 'JsonRpcErrorResponse(id: $id, error: $error)';
+  String toString() => 'JsonRpcErrorResponse(id: $id, error: $error, jsonrpc: $jsonrpc)';
 }

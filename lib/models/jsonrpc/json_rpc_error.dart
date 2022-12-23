@@ -25,8 +25,8 @@ class JsonRpcError {
       JsonRpcError(-30000, 'Invalid secret token');
   factory JsonRpcError.sessionExpired() =>
       JsonRpcError(-30001, 'Session expired');
-  factory JsonRpcError.sessionAlreadyConnected() =>
-      JsonRpcError(-30002, 'Session already connected');
+  factory JsonRpcError.sessionAlreadyConnected(String key) =>
+      JsonRpcError(-30002, key);
   factory JsonRpcError.incorrectUntil() =>
       JsonRpcError(-30003, 'Incorrect “until“ field');
   factory JsonRpcError.chainIdNotSupported() =>
